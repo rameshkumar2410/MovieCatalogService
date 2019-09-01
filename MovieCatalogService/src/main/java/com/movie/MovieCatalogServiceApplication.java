@@ -4,6 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
+/**
+ * Movie Catalog Service Controller
+ * @author Ramesh
+ *
+ */
 @SpringBootApplication
 @EnableEurekaClient
 public class MovieCatalogServiceApplication {

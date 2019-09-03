@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.movie.models.CatalogItem;
 import com.movie.models.Movie;
 import com.movie.models.Ratings;
+import com.movie.models.UserRatings;
 
 /**
  * Microservice for Movie catalog
@@ -31,26 +32,29 @@ public class MovieCatalogController {
 
 	@Autowired
 	RestTemplate restTemplate;
-	
+
 	@Autowired
 	WebClient.Builder builder;
 
 	@RequestMapping(value = "/{userID}")
 	public List<CatalogItem> getCatalog(@PathVariable("userID") String userID) {
 
-		List<Ratings> ratingList = Arrays.asList(new Ratings("1234", 4), new Ratings("2345", 5));
+		UserRatings userRatings = restTemplate.getForObject("http://ratingdataservice-service/ratings/" + userID,
+				UserRatings.class);
 
-		return ratingList.stream().map(rating -> {
-			Movie movie = restTemplate.getForObject("http://localhost:8762/infoService/" + rating.getMovieId(),
+		return userRatings.getUserRatings().stream().map(rating -> {
+			Movie movie = restTemplate.getForObject("http://movieinfoservice-service/infoService/" + rating.getMovieId(),
 					Movie.class);
 
-			/*Movie movie=builder.build()
-			.get()
-			.uri("http://localhost:8762/infoService/\" + rating.getMovieId()")
-			.retrieve()
-			.bodyToMono(Movie.class)
-			.block();*/
-			
+			/*
+			 * Movie movie=builder.build() 
+			 * .get()
+			 * .uri("http://localhost:8762/infoService/\" + rating.getMovieId()")
+			 * .retrieve() 
+			 * .bodyToMono(Movie.class) 
+			 * .block();
+			 */
+
 			return new CatalogItem(movie.getName(), "Robot", rating.getRatings());
 		}).collect(Collectors.toList());
 		// return (List<CatalogItem>) Collections.singletonList(new
